@@ -3,31 +3,6 @@ import React from 'react';
 //* Наш компонент является расширением компонента React
 class ListItem extends React.Component {
 
-	//* Задаем поля изменение которых должно влечь изменение состояния и новую отрисовку элемента
-	state = {
-		important: false,
-		done: false
-	}
-
-	//* Функция для изменения состояния "Важно", по сути меняем флаг
-	onImportantClick = () => {
-		this.setState((state) => {
-			return {
-				important: !state.important
-			}
-		})
-	}
-
-	//* Функция для изменения состояния "Завершено", по сути меняем флаг
-	onDoneClick = () => {
-		this.setState((state) => {
-			return {
-				important: false,
-				done: !state.done
-			}
-		})
-	}
-
 	//* Функция рендера компонента
 	render() {
 
@@ -35,12 +10,12 @@ class ListItem extends React.Component {
 		let classNames = 'todo-item'
 
 		//* Добавляем класс если отмечено "Важно"
-		if (this.state.important) {
+		if (this.props.task.important) {
 			classNames += ' important';
 		}
 
 		//* Добавляем класс если отмечено "Завершено"
-		if (this.state.done) {
+		if (this.props.task.done) {
 			classNames += ' done';
 		}
 
@@ -48,10 +23,10 @@ class ListItem extends React.Component {
 		return (
 			<li className={classNames}>
 				{/*Здесь вызов функции по клику и работа с принятыми пропсами*/}
-				<span onClick={this.onDoneClick} className="todo-item-text">{this.props.task.title}</span>
+				<span onClick={() => {this.props.onToggleDone(this.props.task.id)}} className="todo-item-text">{this.props.task.title}</span>
 				<div className="btn-group">
 					{/*Здесь также вызов функции по клику*/}
-					<button onClick={this.onImportantClick} role="button" className="btn btn-outline-dark btn-sm">
+					<button onClick={() => {this.props.onToggleImportant(this.props.task.id)}} role="button" className="btn btn-outline-dark btn-sm">
 						Важное
 					</button>
 					<button role="button" className="btn btn-outline-danger btn-sm">
