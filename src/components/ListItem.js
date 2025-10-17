@@ -1,38 +1,32 @@
-import React from "react";
+import { Component } from "react";
 
-//* Наш компонент является расширением компонента React
-class ListItem extends React.Component {
-	//* Функция рендера компонента
+class ListItem extends Component {
 	render() {
-		//* Сохраняем базовый класс
+		const { task, onToggleDone, onToggleImportant, deleteItem } = this.props;
+
 		let classNames = "todo-item";
 
-		//* Добавляем класс если отмечено "Важно"
-		if (this.props.task.important) {
+		if (task.important) {
 			classNames += " important";
 		}
 
-		//* Добавляем класс если отмечено "Завершено"
-		if (this.props.task.done) {
+		if (task.done) {
 			classNames += " done";
 		}
 
-		//* Отрисовка элемента
 		return (
 			<li className={classNames}>
-				{/*Здесь вызов функции по клику и работа с принятыми пропсами*/}
 				<span
 					onClick={() => {
-						this.props.onToggleDone(this.props.task.id);
+						onToggleDone(task.id);
 					}}
 					className="todo-item-text">
-					{this.props.task.title}
+					{task.title}
 				</span>
 				<div className="btn-group">
-					{/*Здесь также вызов функции по клику*/}
 					<button
 						onClick={() => {
-							this.props.onToggleImportant(this.props.task.id);
+							onToggleImportant(task.id);
 						}}
 						role="button"
 						className="btn btn-outline-dark btn-sm">
@@ -40,7 +34,7 @@ class ListItem extends React.Component {
 					</button>
 					<button
 						onClick={() => {
-							this.props.deleteItem(this.props.task.id);
+							deleteItem(task.id);
 						}}
 						role="button"
 						className="btn btn-outline-danger btn-sm">

@@ -1,8 +1,4 @@
-import ReactDOM from 'react-dom';
+import ReactDOM from "react-dom";
+import App from "./components/App";
 
-//* Импорт компонентов
-import App from './components/App';
-
-
-//* Передаем компоненты на отрисовку в заданный элемент
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(<App />, document.getElementById("root"));

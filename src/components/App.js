@@ -1,88 +1,57 @@
-import React from "react";
-
+import { Component } from "react";
 import Header from "./Header";
 import Search from "./Search";
 import List from "./List";
 import Footer from "./Footer";
+import StatusBar from "./StatusBar";
 
-class App extends React.Component {
+class App extends Component {
 	state = {
 		todoData: [
 			{ id: 0, title: "Выпить кофе", important: false, done: false },
-			{
-				id: 1,
-				title: "Сделать React приложение",
-				important: true,
-				done: false,
-			},
+			{ id: 1, title: "Сделать React приложение", important: true, done: true },
 			{ id: 2, title: "Позавтракать", important: false, done: false },
 		],
+		term: "",
+		status: "all",
 	};
 
 	deleteItem = (id) => {
 		this.setState((state) => {
-			const index = state.todoData.findIndex((el) => {
-				return el.id === id;
-			});
-			const part1 = state.todoData.slice(0, index);
-			const part2 = state.todoData.slice(index + 1);
-			const newArray = [...part1, ...part2];
-
 			return {
-				todoData: newArray,
+				todoData: state.todoData.filter((task) => {
+					return task.id !== id;
+				}),
 			};
 		});
 	};
 
-	onToggleImportant = (id) => {
+	toggleParam = (param, id) => {
 		this.setState((state) => {
-			const index = state.todoData.findIndex((el) => {
-				return el.id === id;
+			const newArray = state.todoData.map((task) => {
+				return {
+					...task,
+					[param]: task.id === id ? !task[param] : task[param],
+				};
 			});
-
-			const oldItem = state.todoData[index];
-
-			const newItem = { ...oldItem, important: !oldItem.important };
-
-			const part1 = state.todoData.slice(0, index);
-			const part2 = state.todoData.slice(index + 1);
-
-			const newArray = [...part1, newItem, ...part2];
 
 			return {
 				todoData: newArray,
 			};
 		});
+	}
+
+	onToggleImportant = (id) => {
+		this.toggleParam("important", id);
 	};
 
 	onToggleDone = (id) => {
-		this.setState((state) => {
-			const index = state.todoData.findIndex((el) => {
-				return el.id === id;
-			});
-
-			const oldItem = state.todoData[index];
-
-			const newItem = {
-				...oldItem,
-				important: false,
-				done: !oldItem.done,
-			};
-
-			const part1 = state.todoData.slice(0, index);
-			const part2 = state.todoData.slice(index + 1);
-
-			const newArray = [...part1, newItem, ...part2];
-
-			return {
-				todoData: newArray,
-			};
-		});
+		this.toggleParam('done', id)
 	};
 
 	addItem = (title) => {
 		this.setState((state) => {
-			const id = state.todoData[state.todoData.length - 1]['id'] + 1;
+			const id = state.todoData[state.todoData.length - 1]["id"] + 1;
 
 			const newItem = { id: id, title: title, important: false, done: false };
 
@@ -91,14 +60,61 @@ class App extends React.Component {
 		});
 	};
 
+	search = (items, term) => {
+		if (term.trim().length === 0) {
+			return items;
+		}
+
+		return items.filter((item) => {
+			if (item.title.toLowerCase().indexOf(term.toLowerCase().trim()) > -1) {
+				return true;
+			}
+		});
+	};
+
+	changeTerm = (term) => {
+		this.setState({
+			term: term,
+		});
+	};
+
+	filterByStatus = (items, status) => {
+		switch (status) {
+			case "all":
+				return items;
+			case "active":
+				return items.filter((item) => {
+					return item.done === false;
+				});
+			case "done":
+				return items.filter((item) => {
+					return item.done === true;
+				});
+			default:
+				return items;
+		}
+	};
+
+	changeStatus = (status) => {
+		this.setState({
+			status: status,
+		});
+	};
+
 	render() {
+		const filteredBySearchItems = this.search(this.state.todoData, this.state.term);
+		const filteredByStatusItems = this.filterByStatus(filteredBySearchItems, this.state.status);
+
 		return (
 			<div>
 				{/*Передаем компоненты для отрисовки*/}
 				<Header />
-				<Search />
+				<div className="search">
+					<Search changeTerm={this.changeTerm} term={this.state.term} />
+					<StatusBar changeStatus={this.changeStatus} status={this.state.status} />
+				</div>
 				<List
-					data={this.state.todoData}
+					data={filteredByStatusItems}
 					onToggleImportant={this.onToggleImportant}
 					onToggleDone={this.onToggleDone}
 					deleteItem={this.deleteItem}
